@@ -1,0 +1,19 @@
+
+
+{{- with .Values.frontend }}
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  labels:
+    app: feedback360
+    name: {{ .name }}
+    {{- range $label := $.Values.global.labels }}
+    {{ $label.key }} : {{ tpl $label.value $ }}
+    {{- end}}
+  name: {{ .name }}-cm
+data:
+  environment.js: |-
+    window.keycloak = {
+      baseUrl: '{{ tpl $.Values.oauth.oidcIssuerUrl $ }}'
+    }
+{{- end -}}

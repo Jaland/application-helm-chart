@@ -1,0 +1,46 @@
+---
+frontend:
+  name: manager-360-front
+  port: 8081
+
+backend:
+  name: survey-openapi-spring-service
+  port: 8080
+
+env: dev
+
+keycloak:
+  redirectUrl: https://feedback360-{{ $.Release.Namespace }}.{{ $.Values.global.cluster.baseDomain }} 
+  
+oauth:
+  host: feedback360-{{ $.Release.Namespace }}.{{ $.Values.global.cluster.baseDomain }}
+  oidcIssuerUrl: https://keycloak-{{ $.Release.Namespace }}.{{ $.Values.global.cluster.baseDomain }}/auth/realms/consultant360
+  frontend:
+    name: manager-360-front
+    port: 8081
+  backend:
+    name: survey-openapi-spring-service
+    port: 8080
+  
+
+postgres:
+  name: "tododb"
+  app: "tododb"
+  postgresqlUsername: "todo_user"
+  postgresqlPassword: "todo_password"
+  postgresqlDatabase: "todo_database"
+  service:
+    port: 5432
+
+global:
+  labels:
+    - key: helm.sh/chart
+      value: '{{ $.Chart.Name }}-{{ $.Chart.Version | replace "+" "_" }}'
+    - key: app.kubernetes.io/managed-by
+      value: "{{ $.Release.Service }}"
+    - key: app.kubernetes.io/instance
+      value: "{{ $.Release.Name }}"
+    - key: app.kubernetes.io/version
+      value: "{{ $.Chart.AppVersion }}"
+  cluster:
+    baseDomain: apps.shared-na4.na4.openshift.opentlc.com

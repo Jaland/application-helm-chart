@@ -1,0 +1,25 @@
+---
+{{- with .Values.frontend }}
+apiVersion: apps.openshift.io/v1
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ .name }}
+  labels:
+    app: feedback360
+    name: {{ .name }}
+    {{- range $label := $.Values.global.labels }}
+    {{ $label.key }} : {{ tpl $label.value $ }}
+    {{- end}}
+  annotations:
+    service.alpha.openshift.io/serving-cert-secret-name: frontend-keycert
+spec:
+  ports:
+  - protocol: TCP
+    port: {{ .port }}
+    targetPort: {{ .port }}
+  selector:
+    deploymentConfig: {{ .name }}
+  type: ClusterIP
+  sessionAffinity: None
+{{- end -}}

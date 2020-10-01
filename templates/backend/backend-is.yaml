@@ -1,0 +1,16 @@
+
+{{- with .Values.backend }}
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  labels:
+    app: feedback360
+    name: {{ .name }}
+    {{- range $label := $.Values.global.labels }}
+    {{ $label.key }} : {{ tpl $label.value $ }}
+    {{- end}}
+  name: {{ .name }}
+spec:
+  lookupPolicy:
+    local: true
+{{- end -}}

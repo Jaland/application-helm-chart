@@ -1,0 +1,23 @@
+---
+{{- with .Values.backend }}
+apiVersion: apps.openshift.io/v1
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ .name }}
+  labels:
+    app: feedback360
+    name: {{ .name }}
+    {{- range $label := $.Values.global.labels }}
+    {{ $label.key }} : {{ tpl $label.value $ }}
+    {{- end}}
+spec:
+  ports:
+  - protocol: TCP
+    port: {{ .port }}
+    targetPort: {{ .port }}
+  selector:
+    deploymentConfig: {{ .name }}
+  type: ClusterIP
+  sessionAffinity: None
+{{- end -}}

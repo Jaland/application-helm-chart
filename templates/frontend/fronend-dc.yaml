@@ -1,0 +1,94 @@
+---
+{{- with .Values.frontend }}
+apiVersion: apps.openshift.io/v1
+kind: DeploymentConfig
+metadata:
+  labels:
+    app: feedback360
+    name: {{ .name }}
+    {{- range $label := $.Values.global.labels }}
+    {{ $label.key }} : {{ tpl $label.value $ }}
+    {{- end}}
+  name: {{ .name }}
+spec:
+  replicas: {{ .replicas | default "1" }}
+  selector:
+    deploymentConfig: {{ .name }}
+  strategy:
+    activeDeadlineSeconds: 21600
+    resources: {}
+    rollingParams:
+      intervalSeconds: 1
+      maxSurge: 25%
+      maxUnavailable: 25%
+      timeoutSeconds: 600
+      updatePeriodSeconds: 1
+    type: Rolling
+  template:
+    metadata:
+      labels:
+        app: {{ .name }}
+        deploymentConfig: {{ .name }}
+      name: {{ .name }}-deploy
+    spec:
+      containers:
+      - name: {{ .name }}
+        image: {{ $.Release.Namespace }}/{{ .name }}
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /
+            port: {{ .port }}
+            scheme: HTTP
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        ports:
+        - containerPort: {{ .port }}
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /
+            port: {{ .port }}
+            scheme: HTTP
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - name: environment
+          mountPath: /opt/app-root/src/cluster_config
+        - name: keystore-volume
+          mountPath: /etc/x509/https
+          readOnly: true
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: environment
+        configMap:
+          defaultMode: 420
+          name: {{ .name }}-cm
+      - name: keystore-volume
+        secret:
+          secretName: frontend-keycert
+  triggers:
+  - type: ConfigChange
+  - type: ImageChange
+    imageChangeParams:
+      automatic: true
+      containerNames:
+      - {{ .name }}
+      from:
+        kind: ImageStreamTag
+        namespace: {{ $.Release.Namespace }}
+        name: {{ .name }}:{{ .tag | default "latest" }}
+{{- end -}}

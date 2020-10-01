@@ -1,0 +1,103 @@
+---
+{{- with .Values.backend }}
+apiVersion: apps.openshift.io/v1
+kind: DeploymentConfig
+metadata:
+  labels:
+    app: feedback360
+    name: {{ .name }}
+    {{- range $label := $.Values.global.labels }}
+    {{ $label.key }} : {{ tpl $label.value $ }}
+    {{- end}}
+  name: {{ .name }}
+spec:
+  replicas: {{ .replicas | default "1" }}
+  revisionHistoryLimit: 10
+  selector:
+    deploymentConfig: {{ .name }}
+  strategy:
+    activeDeadlineSeconds: 21600
+    resources: {}
+    rollingParams:
+      intervalSeconds: 1
+      maxSurge: 25%
+      maxUnavailable: 25%
+      timeoutSeconds: 600
+      updatePeriodSeconds: 1
+    type: Rolling
+  template:
+    metadata:
+      labels:
+        app: {{ .name }}
+        deploymentConfig: {{ .name }}
+      name: {{ .name }}-deploy
+    spec:
+      containers:
+      - name: {{ .name }}
+        env:
+        - name: POSTGRES_USERNAME
+          valueFrom:
+            secretKeyRef:
+              key: postgresqlUsername
+              name: {{ $.Values.postgres.name }}-secret  {{- /*TODO: Figure out how to handle connecting to postgres when not using local*/}}
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: postgresqlPassword
+              name: {{ $.Values.postgres.name }}-secret
+        - name: POSTGRES_DATABASE_NAME
+          valueFrom:
+            secretKeyRef:
+              key: postgresqlDatabase
+              name: {{ $.Values.postgres.name }}-secret
+        - name: DB_SERVICE_NAME
+          value: {{ $.Values.postgres.name }}.{{ $.Release.Namespace }}.svc.cluster.local
+        - name: SERVER_SERVLET_CONTEXT_PATH
+          value: /api/v1
+        - name: JAVA_ARGS
+          value: --spring.profiles.active={{ $.Values.env }}
+        image: {{ $.Release.Namespace }}/{{ .name }}
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /api/v1/actuator/health
+            port: {{ .port }}
+            scheme: HTTP
+          initialDelaySeconds: 90
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        ports:
+        - containerPort: {{ .port }}
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /api/v1/actuator/health
+            port: {{ .port }}
+            scheme: HTTP
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+  triggers:
+  - type: ConfigChange
+  - type: ImageChange
+    imageChangeParams:
+      automatic: true
+      containerNames:
+      - {{ .name }}
+      from:
+        kind: ImageStreamTag
+        namespace: {{ $.Release.Namespace }}
+        name: {{ .name }}:{{ .tag | default "latest" }}
+{{- end -}}
