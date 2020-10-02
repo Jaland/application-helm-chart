@@ -33,6 +33,9 @@ spec:
     spec:
       containers:
       - name: {{ .name }}
+        env:
+        - name: REACT_APP_FRONEND_URL
+          value: {{  $.Values.backend.name }}.{{ $.Release.Namespace }}.svc.cluster.local
         image: {{ $.Release.Namespace }}/{{ .name }}
         imagePullPolicy: IfNotPresent
         livenessProbe:
