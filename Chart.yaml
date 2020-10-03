@@ -31,10 +31,11 @@ dependencies:
   repository: "https://jaland.github.io/oauth-helm-chart"
   tags:
   - oauth
-- name: postgres
-  version: "~1.1.0"
-  repository: "https://jland-redhat.github.io/postgres-helm-chart"
+# Example of using a local chart
+- name: pipeline
+  version: "~1.0.0"
+  repository: "file://../pipeline"
   tags:
-  - postgres
+  - pipeline
 
 maintainers: []

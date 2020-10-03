@@ -1,16 +1,10 @@
 ---
-frontend:
-  name: manager-360-front
-  port: 8081
-
-backend:
-  name: survey-openapi-spring-service
-  port: 8080
+app: example
 
 env: dev
 
 keycloak:
-  redirectUrl: https://feedback360-{{ $.Release.Namespace }}.{{ $.Values.global.cluster.baseDomain }} 
+  redirectUrl: https://{{ $.Values.app }}-{{ $.Release.Namespace }}.{{ $.Values.global.cluster.baseDomain }} 
   
 oauth:
   host: feedback360-{{ $.Release.Namespace }}.{{ $.Values.global.cluster.baseDomain }}
@@ -33,6 +27,12 @@ postgres:
     port: 5432
 
 global:
+  frontend:
+    name: example-frontend
+    port: 8081
+  backend:
+    name: example-backend
+    port: 8080
   labels:
     - key: helm.sh/chart
       value: '{{ $.Chart.Name }}-{{ $.Chart.Version | replace "+" "_" }}'

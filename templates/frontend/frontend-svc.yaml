@@ -6,7 +6,7 @@ apiVersion: v1
 metadata:
   name: {{ .name }}
   labels:
-    app: feedback360
+    app: {{ $.Values.app }}
     name: {{ .name }}
     {{- range $label := $.Values.global.labels }}
     {{ $label.key }} : {{ tpl $label.value $ }}

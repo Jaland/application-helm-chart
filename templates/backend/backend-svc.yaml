@@ -1,12 +1,12 @@
 ---
-{{- with .Values.backend }}
+{{- with .Values.global.backend }}
 apiVersion: apps.openshift.io/v1
 kind: Service
 apiVersion: v1
 metadata:
   name: {{ .name }}
   labels:
-    app: feedback360
+    app: {{ $.Values.app }}
     name: {{ .name }}
     {{- range $label := $.Values.global.labels }}
     {{ $label.key }} : {{ tpl $label.value $ }}
