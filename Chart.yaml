@@ -14,11 +14,11 @@ type: application
 
 # This is the chart version. This version number should be incremented each time you make changes
 # to the chart and its templates, including the app version.
-version: 0.1.0
+version: 1.0.0
 
 # This is the version number of the application being deployed. This version number should be
 # incremented each time you make changes to the application.
-appVersion: 1.16.1
+appVersion: 1.17.0
 
 dependencies:
 - name: keycloak
@@ -31,9 +31,13 @@ dependencies:
   repository: "https://jaland.github.io/oauth-helm-chart"
   tags:
   - oauth
-# Example of using a local chart
+- name: postgres
+  version: "~1.1.2"
+  repository: "https://jland-redhat.github.io/postgres-helm-chart/"
+  tags:
+  - postgres
 - name: pipeline
-  version: "~1.0.0"
+  version: "~0.0.0"
   repository: "file://../pipeline"
   tags:
   - pipeline

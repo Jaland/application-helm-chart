@@ -1,25 +1,22 @@
 ---
-app: example
-
 env: dev
 
 keycloak:
-  redirectUrl: https://{{ $.Values.app }}-{{ $.Release.Namespace }}.{{ $.Values.global.cluster.baseDomain }} 
-  
+  redirectUrl: 'https://{{ $.Values.global.appname }}-{{ $.Release.Namespace }}.{{ $.Values.global.cluster.baseDomain }}'
+  username: lskywalker
+  password: lskywalker
+
 oauth:
-  host: feedback360-{{ $.Release.Namespace }}.{{ $.Values.global.cluster.baseDomain }}
-  oidcIssuerUrl: https://keycloak-{{ $.Release.Namespace }}.{{ $.Values.global.cluster.baseDomain }}/auth/realms/consultant360
-  frontend:
-    name: manager-360-front
-    port: 8081
+  host: '{{ $.Values.global.appname }}-{{ $.Release.Namespace }}.{{ $.Values.global.cluster.baseDomain }}'
+  oidcIssuerUrl: 'https://keycloak-{{ $.Release.Namespace }}.{{ $.Values.global.cluster.baseDomain }}/auth/realms/{{ $.Release.Name }}'
+
+pipeline:
   backend:
-    name: survey-openapi-spring-service
-    port: 8080
-  
+    url:  'https://{{ $.Values.global.appname }}-{{ $.Release.Namespace }}.{{ $.Values.global.cluster.baseDomain }}/api/v1'
 
 postgres:
   name: "tododb"
-  app: "tododb"
+  app: "example-app"
   postgresqlUsername: "todo_user"
   postgresqlPassword: "todo_password"
   postgresqlDatabase: "todo_database"
@@ -27,9 +24,10 @@ postgres:
     port: 5432
 
 global:
+  appname: example-app
   frontend:
     name: example-frontend
-    port: 8081
+    port: 8080
   backend:
     name: example-backend
     port: 8080

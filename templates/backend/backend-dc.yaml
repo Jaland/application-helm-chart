@@ -4,7 +4,7 @@ apiVersion: apps.openshift.io/v1
 kind: DeploymentConfig
 metadata:
   labels:
-    app: {{ $.Values.app }}
+    app: {{ $.Values.global.appname }}
     name: {{ .name }}
     {{- range $label := $.Values.global.labels }}
     {{ $label.key }} : {{ tpl $label.value $ }}
@@ -28,7 +28,8 @@ spec:
   template:
     metadata:
       labels:
-        app: {{ .name }}
+        app: {{ $.Values.global.appname }}
+        name: {{ .name }}
         deploymentConfig: {{ .name }}
       name: {{ .name }}-deploy
     spec:
@@ -39,7 +40,7 @@ spec:
           valueFrom:
             secretKeyRef:
               key: postgresqlUsername
-              name: {{ $.Values.postgres.name }}-secret  {{- /*TODO: Figure out how to handle connecting to postgres when not using local*/}}
+              name: {{ $.Values.postgres.name }}-secret
         - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
