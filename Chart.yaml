@@ -38,7 +38,7 @@ dependencies:
   - postgres
 - name: pipeline
   version: "~0.0.0"
-  repository: "file://../pipeline"
+  repository: "file://../pipeline-chart"
   tags:
   - pipeline
 
