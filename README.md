@@ -1,3 +1,9 @@
+## Prerequisites
+
+* Openshift 4.4+
+* Opensshift Piplelines(tekton)
+
+
 ## Example Frontend/Backend deployment
 
 Creates a DeploymentConfig, Service, and ImageStream for a frontend and backend application. Sets up a PostgresDB. And Puts the services behind an OAuth proxy using Keycloak as a security realm.
