@@ -35,8 +35,6 @@ spec:
       containers:
       - name: {{ .name }}
         env:
-        - name: REACT_APP_BACKEND_URL
-          value: {{  $.Values.global.backend.name }}.{{ $.Release.Namespace }}.svc.cluster.local
         - name: PORT
           value: "{{ .port }}"
         image: {{ $.Release.Namespace }}/{{ .name }}

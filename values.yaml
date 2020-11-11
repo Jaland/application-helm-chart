@@ -41,4 +41,4 @@ global:
     - key: app.kubernetes.io/version
       value: "{{ $.Chart.AppVersion }}"
   cluster:
-    baseDomain: apps.shared-na4.na4.openshift.opentlc.com
+    baseDomain: apps.cluster-d709.d709.sandbox810.opentlc.com
