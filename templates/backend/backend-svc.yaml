@@ -1,6 +1,5 @@
 ---
 {{- with .Values.global.backend }}
-apiVersion: apps.openshift.io/v1
 kind: Service
 apiVersion: v1
 metadata:
